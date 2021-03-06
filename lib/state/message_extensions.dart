@@ -50,9 +50,9 @@ extension GridMessageExtensions on GridState {
       width: width,
       height: height,
       id: id,
+      entities: tokens.map((e) => e.toDomain  ()).toList(),
+      strokes: strokes.map((e) => e.toDomain()).toList(),
     );
-    grid.entities.addAll(tokens.map((e) => e.toDomain()));
-    grid.strokes.addAll(strokes.map((e) => e.toDomain()));
     return grid;
   }
 }
