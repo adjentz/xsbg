@@ -45,6 +45,7 @@ class SuperSimpleBattleGrid extends StatelessWidget {
       title: 'Super Simple Battle Grid',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        highlightColor: Colors.orange
       ),
       home: JoinLobby(),
     );

@@ -5,6 +5,7 @@ import 'package:xsbg/services/battle_grid_server.dart';
 import 'package:grpc/grpc.dart' as grpc;
 import 'package:uuid/uuid.dart';
 import 'package:qr/qr.dart';
+import 'package:wifi_info_flutter/wifi_info_flutter.dart' as wifi;
 
 class LobbyState with ChangeNotifier {
   bool hosting = false;
@@ -20,35 +21,28 @@ class LobbyState with ChangeNotifier {
   bool get readyToConnect =>
       !shutdown && (ipAddress?.isNotEmpty ?? false) && port > 0;
 
-  void initializeLobby(BattleGrid grid) {
+  void initializeLobby(BattleGrid grid) async {
     _gridService = BattleGridServer(grid);
 
     _grpcServer = grpc.Server([_gridService]);
     port = 1337;
-    ipAddress = 'localhost';
+    ipAddress = await wifi.WifiInfo().getWifiIP();
     uuid = Uuid().v4();
 
     _grpcServer.serve(port: port);
 
     hosting = true;
     shutdown = false;
-    // _makeQr();
+    _makeQr();
 
     notifyListeners();
   }
 
   void _makeQr() async {
-    final data = '$ipAddress:$port;$uuid';
-    final result = await compute(this._computeQr, data);
-    this.qrCode = result;
-  }
-
-  QrCode _computeQr(String data) {
-    final qrCode = new QrCode(4, QrErrorCorrectLevel.L);
+    final data = 'grpc://$ipAddress:$port?hostId=$uuid';
+    this.qrCode = new QrCode(4, QrErrorCorrectLevel.L);
     qrCode.addData(data);
     qrCode.make();
-
-    return qrCode;
   }
 
   void joinLobby(String ipAddress, int port, String uuid) {
@@ -58,7 +52,7 @@ class LobbyState with ChangeNotifier {
     this.uuid = uuid;
     shutdown = false;
 
-    // _makeQr();
+    _makeQr();
 
     notifyListeners();
   }
@@ -70,7 +64,6 @@ class LobbyState with ChangeNotifier {
   }
 
   void endSession() {
-    hosting = false;
     ipAddress = null;
     port = 0;
     uuid = null;
@@ -82,5 +75,6 @@ class LobbyState with ChangeNotifier {
 
   void closeServer() {
     _grpcServer?.shutdown();
+    hosting = false;
   }
 }

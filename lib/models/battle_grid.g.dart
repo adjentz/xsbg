@@ -21,6 +21,8 @@ class BattleGridAdapter extends TypeAdapter<BattleGrid> {
       width: fields[1] as int,
       height: fields[2] as int,
       id: fields[5] as String,
+      entities: (fields[3] as List)?.cast<BattleToken>(),
+      strokes: (fields[4] as List)?.cast<BattleStroke>(),
     );
   }
 

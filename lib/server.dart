@@ -3,7 +3,13 @@ import 'package:grpc/grpc.dart' as grpc;
 import 'models/battle_grid.dart';
 
 void main() async {
-  final grid = BattleGrid('quick', width: 20, height: 20);
+  final grid = BattleGrid(
+    'quick',
+    width: 20,
+    height: 20,
+    entities: [],
+    strokes: [],
+  );
   final _gridService = BattleGridServer(grid);
 
   final _grpcServer = grpc.Server([_gridService]);

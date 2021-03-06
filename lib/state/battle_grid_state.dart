@@ -28,12 +28,16 @@ class BattleGridState with ChangeNotifier {
     }
 
     if (lobby.shutdown) {
-      if (lobby.hosting) {
-        await _client?.closeSession(GridUpdateMessage());
+      try {
+        if (lobby.hosting) {
+          await _client?.closeSession(GridUpdateMessage());
+        }
+        await _channel?.shutdown();
+        lobby.closeServer();
+        _client = null;
+      } catch (err) {
+        print(err);
       }
-      await _channel?.shutdown();
-      lobby.closeServer();
-      _client = null;
       return;
     }
 
